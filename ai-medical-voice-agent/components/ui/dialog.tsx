@@ -25,9 +25,15 @@ function DialogPortal({
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
 }
 
-function DialogClose({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) {
+function DialogClose({ children, ...props }: React.ComponentProps<typeof DialogPrimitive.Close>) {
+  if (children) {
+    return (
+      <DialogPrimitive.Close data-slot="dialog-close" asChild {...props}>
+        {children as React.ReactElement}
+      </DialogPrimitive.Close>
+    )
+  }
+
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 

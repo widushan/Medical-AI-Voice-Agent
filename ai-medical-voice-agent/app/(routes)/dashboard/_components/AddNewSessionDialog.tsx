@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Dialog,
   DialogClose,
@@ -13,8 +13,24 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { IconArrowRight } from '@tabler/icons-react'
+import axios from 'axios'
 
 const AddNewSessionDialog = () => {
+
+  const [note, setNote] = useState<string>();
+
+  const [loading, setLoading] = useState(false);
+
+  const OnClickNext = async () => {
+    setLoading(true);
+    const result = await axios.post('/api/suggest-doctors', {
+      notes: note
+    });
+    
+    console.log(result.data);
+    setLoading(false);
+  }
+
   return (
     <div>
       <Dialog>
@@ -27,7 +43,8 @@ const AddNewSessionDialog = () => {
             <DialogDescription asChild>
                 <div>
                   <h2>Enter Symptoms or Any Other Details</h2>
-                  <Textarea placeholder='Type Details here' className='h-[250px] mt-1'/>
+                  <Textarea placeholder='Type Details here' className='h-[250px] mt-1'
+                  onChange={(e)=>setNote(e.target.value)}/>
                 </div>
             </DialogDescription>
             </DialogHeader>
@@ -35,7 +52,7 @@ const AddNewSessionDialog = () => {
               <DialogClose>
                 <Button variant={'outline'}>Cancel</Button>
               </DialogClose>
-              <Button>Start<IconArrowRight/></Button>
+              <Button disabled={!note} onClick={() => OnClickNext()}>Next<IconArrowRight/></Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>
