@@ -2,13 +2,17 @@
 import React from 'react'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { IconArrowRight } from '@tabler/icons-react'
 
 const AddNewSessionDialog = () => {
   return (
@@ -19,12 +23,20 @@ const AddNewSessionDialog = () => {
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-                This action cannot be undone. This will permanently delete your account
-                and remove your data from our servers.
+            <DialogTitle>Add Basic Details</DialogTitle>
+            <DialogDescription asChild>
+                <div>
+                  <h2>Enter Symptoms or Any Other Details</h2>
+                  <Textarea placeholder='Type Details here' className='h-[250px] mt-1'/>
+                </div>
             </DialogDescription>
             </DialogHeader>
+            <DialogFooter>
+              <DialogClose>
+                <Button variant={'outline'}>Cancel</Button>
+              </DialogClose>
+              <Button>Start<IconArrowRight/></Button>
+            </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>  
