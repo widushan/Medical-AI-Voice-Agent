@@ -39,8 +39,18 @@ const AddNewSessionDialog = () => {
     setLoading(false);
   }
 
-  const onStartConsultation = () => {
-    //save all info to database
+  const onStartConsultation = async () => {
+    setLoading(true);
+    // Save All Info To Databse
+    const result = await axios.post('/api/session-chat', {
+      notes: note,
+      selectedDoctor: selectedDoctor
+    });
+    console.log(result.data)
+    if (result.data?.sessionId) {
+      console.log(result.data.sessionId);
+    }
+    setLoading(false);
   }
 
   return (
@@ -66,7 +76,10 @@ const AddNewSessionDialog = () => {
                     {/* // Suggested Doctors */}
                     {suggestedDoctors.map((doctor, index) => (
                       <SuggestedDoctorCard doctorAgent={doctor} key={index}
-                      setSelectedDoctor={()=>setSelectedDoctor(doctor)} />
+                      setSelectedDoctor={()=>setSelectedDoctor(doctor)}
+                      //@ts-ignore
+                      selectedDoctor={selectedDoctor}
+                      />
                     ))}
                   </div>
                 </div>}
@@ -79,7 +92,9 @@ const AddNewSessionDialog = () => {
               {!suggestedDoctors ? <Button disabled={!note || loading} onClick={() => OnClickNext()}>
                 Next {loading ? <Loader2 className='animate-spin' /> : <IconArrowRight/>}
               </Button> :
-              <Button onClick={()=>onStartConsultation()}>Start Consultation</Button>}
+              <Button disabled={loading || !selectedDoctor} onClick={()=>onStartConsultation()}>Start Consultation
+                {loading ? <Loader2 className='animate-spin' /> : <IconArrowRight/>}
+              </Button>}
             </DialogFooter>
         </DialogContent>
       </Dialog>
