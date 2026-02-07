@@ -26,6 +26,8 @@ const AddNewSessionDialog = () => {
 
   const [suggestedDoctors, setSuggestedDoctors] = useState<doctorAgent[]>();
 
+  const [selectedDoctor, setSelectedDoctor] = useState<doctorAgent>();
+
   const OnClickNext = async () => {
     setLoading(true);
     const result = await axios.post('/api/suggest-doctors', {
@@ -35,6 +37,10 @@ const AddNewSessionDialog = () => {
     console.log(result.data);
     setSuggestedDoctors(result.data);
     setLoading(false);
+  }
+
+  const onStartConsultation = () => {
+    //save all info to database
   }
 
   return (
@@ -53,11 +59,16 @@ const AddNewSessionDialog = () => {
                     className='h-[200px] mt-1'
                     onChange={(e) => setNote(e.target.value)}
                   />
-                </div> : <div className='grid grid-cols-2 gap-5'>
-                  {/* // Suggested Doctors */}
-                  {suggestedDoctors.map((doctor, index) => (
-                    <SuggestedDoctorCard doctorAgent={doctor} key={index} />
-                  ))}
+                </div> : 
+                <div>
+                  <h2>Select the Doctor</h2>
+                  <div className='grid grid-cols-2 gap-5'>
+                    {/* // Suggested Doctors */}
+                    {suggestedDoctors.map((doctor, index) => (
+                      <SuggestedDoctorCard doctorAgent={doctor} key={index}
+                      setSelectedDoctor={()=>setSelectedDoctor(doctor)} />
+                    ))}
+                  </div>
                 </div>}
             </DialogDescription>
             </DialogHeader>
@@ -68,7 +79,7 @@ const AddNewSessionDialog = () => {
               {!suggestedDoctors ? <Button disabled={!note || loading} onClick={() => OnClickNext()}>
                 Next {loading ? <Loader2 className='animate-spin' /> : <IconArrowRight/>}
               </Button> :
-              <Button>Start Consultation</Button>}
+              <Button onClick={()=>onStartConsultation()}>Start Consultation</Button>}
             </DialogFooter>
         </DialogContent>
       </Dialog>

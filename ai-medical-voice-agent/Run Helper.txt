@@ -1,0 +1,35 @@
+npx create-next-app@latest
+
+cd ai-medical-voice-agent
+npm run dev
+
+
+UI Component library - ui.shadcn.com
+
+npx shadcn@latest init
+
+animated components - ui.aceternity.com
+
+Hero section - https://21st.dev/community/components/aceternity/hero-section/default
+in terminal - npx shadcn@latest add https://21st.dev/r/aceternity/hero-section
+then paste the code in page.tsx
+npm install motion
+import { motion } from "motion/react"
+
+bento-grid - https://21st.dev/community/components/aceternity/bento-grid
+in terminal - npx shadcn@latest add https://21st.dev/r/aceternity/bento-grid
+
+
+Neon database
+https://orm.drizzle.team/docs/get-started/neon-new
+in terminal - npm i drizzle-orm @neondatabase/serverless dotenv
+npm i -D drizzle-kit tsx
+
+
+npx neonctl@latest init
+
+after we edit or add new schemas to database we need to push-
+npx drizzle-kit push
+
+
+Clerk Authentication - 
