@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { doctorAgent } from '../../_components/DoctorAgentCard';
 import { Circle } from 'lucide-react';
+import Image from 'next/image';
 
 type SessionDetail = {
   id: number,
@@ -31,10 +32,21 @@ function MedicalVoiceAgent() {
 
   return (
     <div>
-      <div>
-        <h2 className='p-1 px-2 border rounded-md flex gap-2 items-center'><Circle />Not Connected</h2>
-        <h2>00 : 00</h2>
+      <div className='flex justify-between items-center'>
+        <h2 className='p-1 px-2 border rounded-md flex gap-2 items-center'><Circle className='h-4 w-4' />Not Connected</h2>
+        <h2 className='font-bold text-xl text-gray-400'>00 : 00</h2>
       </div>
+      
+        {sessionDetail && (
+          <div className='flex items-center flex-col mt-10'>
+            <Image src={sessionDetail.selectedDoctor.image} alt={sessionDetail.selectedDoctor.specialist??''} 
+            width={120} height={120} 
+            className='h-[100px] w-[100px] object-cover rounded-full'
+            />
+            <h2 className='mt-2 text-lg'>{sessionDetail?.selectedDoctor?.specialist}</h2>
+            <p className='text-sm text-gray-400'>AI Medical Voice Agent</p>
+          </div>
+        )}
     </div>
   )
 }
