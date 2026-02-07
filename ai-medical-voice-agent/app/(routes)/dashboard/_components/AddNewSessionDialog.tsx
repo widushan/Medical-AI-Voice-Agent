@@ -17,6 +17,7 @@ import axios from 'axios'
 import DoctorAgentCard, { doctorAgent } from './DoctorAgentCard'
 import { Loader2 } from 'lucide-react'
 import SuggestedDoctorCard from './SuggestedDoctorCard'
+import { useRouter } from 'next/navigation'
 
 const AddNewSessionDialog = () => {
 
@@ -27,6 +28,9 @@ const AddNewSessionDialog = () => {
   const [suggestedDoctors, setSuggestedDoctors] = useState<doctorAgent[]>();
 
   const [selectedDoctor, setSelectedDoctor] = useState<doctorAgent>();
+
+  const router = useRouter();
+
 
   const OnClickNext = async () => {
     setLoading(true);
@@ -49,6 +53,9 @@ const AddNewSessionDialog = () => {
     console.log(result.data)
     if (result.data?.sessionId) {
       console.log(result.data.sessionId);
+      //Route new Conversation Screen
+      router.push('/dashboard/medical-agent/' + result.data.sessionId);
+
     }
     setLoading(false);
   }
