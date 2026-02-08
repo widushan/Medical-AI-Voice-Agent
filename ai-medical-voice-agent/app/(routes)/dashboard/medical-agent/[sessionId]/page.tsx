@@ -3,8 +3,10 @@ import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { doctorAgent } from '../../_components/DoctorAgentCard';
-import { Circle } from 'lucide-react';
+import { Circle, PhoneCall } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+
 
 type SessionDetail = {
   id: number,
@@ -31,7 +33,7 @@ function MedicalVoiceAgent() {
   }
 
   return (
-    <div>
+    <div className='p-5 border rounded-3xl bg-secondary'>
       <div className='flex justify-between items-center'>
         <h2 className='p-1 px-2 border rounded-md flex gap-2 items-center'><Circle className='h-4 w-4' />Not Connected</h2>
         <h2 className='font-bold text-xl text-gray-400'>00 : 00</h2>
@@ -45,6 +47,13 @@ function MedicalVoiceAgent() {
             />
             <h2 className='mt-2 text-lg'>{sessionDetail?.selectedDoctor?.specialist}</h2>
             <p className='text-sm text-gray-400'>AI Medical Voice Agent</p>
+
+            <div className='mt-32'>
+              <h2 className='text-gray-400'>Assistant Msg</h2>
+              <h2 className='text-lg'>User Msg</h2>
+            </div>
+
+            <Button className='mt-20 flex items-center gap-2'><PhoneCall /> Start Call </Button>
           </div>
         )}
     </div>
