@@ -34,6 +34,8 @@ function MedicalVoiceAgent() {
     onMessage?: (message: any) => void;
   }>({});
 
+  const [currentRole, setCurrentRole] = useState<string>();
+
   useEffect(() => {
     sessionId && GetSessionDetails();
   }, [sessionId])
@@ -74,6 +76,16 @@ function MedicalVoiceAgent() {
     vapi.on('message', onMessage);
     
     vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_AGENT_ASSISTANT_ID);
+
+    vapiInstance.on('speech-start', () => {
+      console.log('Assistant started speaking');
+      setCurrentRole('assistant');
+    });
+    vapiInstance.on('speech-end', () => {
+      console.log('Assistant stopped speaking');
+      setCurrentRole('user');
+    });
+
   }
 
   const endCall = () => {
