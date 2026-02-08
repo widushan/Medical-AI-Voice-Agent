@@ -28,6 +28,12 @@ function MedicalVoiceAgent() {
 
   const [vapiInstance, setVapiInstance] = useState<any>();
 
+  const [listeners, setListeners] = useState<{
+    onCallStart?: () => void;
+    onCallEnd?: () => void;
+    onMessage?: (message: any) => void;
+  }>({});
+
   useEffect(() => {
     sessionId && GetSessionDetails();
   }, [sessionId])
@@ -41,33 +47,50 @@ function MedicalVoiceAgent() {
   const StartCall=()=>{
     const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
     setVapiInstance(vapi);
-    vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_AGENT_ASSISTANT_ID);
-    vapi.on('call-start', () => {console.log('Call started')
+    
+    // Create and store listener functions
+    const onCallStart = () => {
+      console.log('Call started');
       setCallStarted(true);
-    });
-    vapi.on('call-end', () => {
+    };
+    
+    const onCallEnd = () => {
       setCallStarted(false);
-      console.log('Call ended')
-    });
-    vapi.on('message', (message) => {
+      console.log('Call ended');
+    };
+    
+    const onMessage = (message: any) => {
       if (message.type === 'transcript') {
         console.log(`${message.role}: ${message.transcript}`);
       }
-    });
+    };
+    
+    // Store listeners for later removal
+    setListeners({ onCallStart, onCallEnd, onMessage });
+    
+    // Register listeners
+    vapi.on('call-start', onCallStart);
+    vapi.on('call-end', onCallEnd);
+    vapi.on('message', onMessage);
+    
+    vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_AGENT_ASSISTANT_ID);
   }
 
   const endCall = () => {
     if (!vapiInstance) return;
+    
     // Stop the call
     vapiInstance.stop();
-    // Optionally remove listeners (good for memory management)
-    vapiInstance.off('call-start');
-    vapiInstance.off('call-end');
-    vapiInstance.off('message');
     
-    // Reset call state
+    // Remove listeners using stored functions
+    if (listeners.onCallStart) vapiInstance.off('call-start', listeners.onCallStart);
+    if (listeners.onCallEnd) vapiInstance.off('call-end', listeners.onCallEnd);
+    if (listeners.onMessage) vapiInstance.off('message', listeners.onMessage);
+    
+    // Reset state
     setCallStarted(false);
     setVapiInstance(null);
+    setListeners({});
   };
 
 
