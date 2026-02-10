@@ -18,6 +18,11 @@ type SessionDetail = {
   createdOn: string
 }
 
+type messages={
+  role: string,
+  text: string
+}
+
 function MedicalVoiceAgent() {
 
   const { sessionId } = useParams();
@@ -34,7 +39,11 @@ function MedicalVoiceAgent() {
     onMessage?: (message: any) => void;
   }>({});
 
-  const [currentRole, setCurrentRole] = useState<string>();
+  const [currentRole, setCurrentRole] = useState<string|null>();
+
+  const [liveTranscript, setLiveTranscript] = useState<string>();
+
+  const [messages, setMessages] = useState<messages[]>([]);
 
   useEffect(() => {
     sessionId && GetSessionDetails();
@@ -63,7 +72,18 @@ function MedicalVoiceAgent() {
     
     const onMessage = (message: any) => {
       if (message.type === 'transcript') {
+        const {role, transcriptType, transcript} = message;
         console.log(`${message.role}: ${message.transcript}`);
+        if (transcriptType == 'partial'){
+          setLiveTranscript(transcript);
+          setCurrentRole(role);
+        }
+        else {
+          // Final Transcript
+          setMessages((prev: any) => [...prev, { role: role, text: transcript }])
+          setLiveTranscript("");
+          setCurrentRole(null);
+        }
       }
     };
     
@@ -123,9 +143,11 @@ function MedicalVoiceAgent() {
             <h2 className='mt-2 text-lg'>{sessionDetail?.selectedDoctor?.specialist}</h2>
             <p className='text-sm text-gray-400'>AI Medical Voice Agent</p>
 
-            <div className='mt-32'>
-              <h2 className='text-gray-400'>Assistant Msg</h2>
-              <h2 className='text-lg'>User Msg</h2>
+            <div className='mt-32 overflow-y-auto' style={{paddingLeft: '80px', paddingRight: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              {messages?.slice(-4).map((msg:messages, index) => (
+                <h2 className='text-gray-400 p-2' key={index}>{msg.role} : {msg.text}</h2>
+              ))}
+              {liveTranscript && liveTranscript?.length > 0 &&<h2 className='text-lg'>{currentRole} : {liveTranscript}</h2>}
             </div>
 
             {!callStarted? <Button className='mt-20 flex items-center gap-2' onClick={StartCall}>
