@@ -97,11 +97,11 @@ function MedicalVoiceAgent() {
     
     vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_AGENT_ASSISTANT_ID);
 
-    vapiInstance.on('speech-start', () => {
+    vapi.on('speech-start', () => {
       console.log('Assistant started speaking');
       setCurrentRole('assistant');
     });
-    vapiInstance.on('speech-end', () => {
+    vapi.on('speech-end', () => {
       console.log('Assistant stopped speaking');
       setCurrentRole('user');
     });
