@@ -78,7 +78,7 @@ function MedicalVoiceAgent() {
           setLiveTranscript(transcript);
           setCurrentRole(role);
         }
-        else {
+        else if (transcriptType == 'final'){
           // Final Transcript
           setMessages((prev: any) => [...prev, { role: role, text: transcript }])
           setLiveTranscript("");
@@ -143,7 +143,7 @@ function MedicalVoiceAgent() {
             <h2 className='mt-2 text-lg'>{sessionDetail?.selectedDoctor?.specialist}</h2>
             <p className='text-sm text-gray-400'>AI Medical Voice Agent</p>
 
-            <div className='mt-32 overflow-y-auto' style={{paddingLeft: '80px', paddingRight: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <div className='mt-12 overflow-y-auto flex flex-col items-center px-10 md:px-28 lg:px-52 xl:px-72' style={{paddingLeft: '80px', paddingRight: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
               {messages?.slice(-4).map((msg:messages, index) => (
                 <h2 className='text-gray-400 p-2' key={index}>{msg.role} : {msg.text}</h2>
               ))}
