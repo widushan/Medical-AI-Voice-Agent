@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { doctorAgent } from '../../_components/DoctorAgentCard';
-import { Circle, PhoneCall, PhoneOff } from 'lucide-react';
+import { Circle, Loader, PhoneCall, PhoneOff } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Vapi from '@vapi-ai/web';
@@ -37,6 +37,8 @@ function MedicalVoiceAgent() {
     onCallStart?: () => void;
     onCallEnd?: () => void;
     onMessage?: (message: any) => void;
+    onSpeechStart?: () => void;
+    onSpeechEnd?: () => void;
   }>({});
 
   const [currentRole, setCurrentRole] = useState<string|null>();
@@ -44,6 +46,8 @@ function MedicalVoiceAgent() {
   const [liveTranscript, setLiveTranscript] = useState<string>();
 
   const [messages, setMessages] = useState<messages[]>([]);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     sessionId && GetSessionDetails();
@@ -86,44 +90,66 @@ function MedicalVoiceAgent() {
         }
       }
     };
+
+    const onSpeechStart = () => {
+      console.log('Assistant started speaking');
+      setCurrentRole('assistant');
+    };
+
+    const onSpeechEnd = () => {
+      console.log('Assistant stopped speaking');
+      setCurrentRole('user');
+    };
     
     // Store listeners for later removal
-    setListeners({ onCallStart, onCallEnd, onMessage });
+    setListeners({ onCallStart, onCallEnd, onMessage, onSpeechStart, onSpeechEnd });
     
     // Register listeners
     vapi.on('call-start', onCallStart);
     vapi.on('call-end', onCallEnd);
     vapi.on('message', onMessage);
+    vapi.on('speech-start', onSpeechStart);
+    vapi.on('speech-end', onSpeechEnd);
     
     vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_AGENT_ASSISTANT_ID);
-
-    vapi.on('speech-start', () => {
-      console.log('Assistant started speaking');
-      setCurrentRole('assistant');
-    });
-    vapi.on('speech-end', () => {
-      console.log('Assistant stopped speaking');
-      setCurrentRole('user');
-    });
-
   }
 
-  const endCall = () => {
+  const endCall = async() => {
+    setLoading(true);
     if (!vapiInstance) return;
     
     // Stop the call
     vapiInstance.stop();
     
-    // Remove listeners using stored functions
+    // Remove listeners using stored functions (same reference required by Vapi)
     if (listeners.onCallStart) vapiInstance.off('call-start', listeners.onCallStart);
     if (listeners.onCallEnd) vapiInstance.off('call-end', listeners.onCallEnd);
     if (listeners.onMessage) vapiInstance.off('message', listeners.onMessage);
+    if (listeners.onSpeechStart) vapiInstance.off('speech-start', listeners.onSpeechStart);
+    if (listeners.onSpeechEnd) vapiInstance.off('speech-end', listeners.onSpeechEnd);
+
     
     // Reset state
     setCallStarted(false);
     setVapiInstance(null);
     setListeners({});
+
+    const result = await GenerateReport();
+    
+    setLoading(false);
   };
+
+
+  const GenerateReport = async () => {
+    const result = await axios.post('/api/medical-report', {
+      messages: messages,
+      sessionDetail: sessionDetail,
+      sessionId: sessionId
+    })
+    // Medical report shape: sessionId, agent, user, timestamp, chiefComplaint, summary, symptoms, duration, severity, medicationsMentioned, recommendations
+    console.log('Medical report:', result.data);
+    return result.data;
+  }
 
 
 
@@ -150,9 +176,10 @@ function MedicalVoiceAgent() {
               {liveTranscript && liveTranscript?.length > 0 &&<h2 className='text-lg'>{currentRole} : {liveTranscript}</h2>}
             </div>
 
-            {!callStarted? <Button className='mt-20 flex items-center gap-2' onClick={StartCall}>
-              <PhoneCall /> Start Call </Button>
-            :<Button variant={'destructive'} onClick={endCall}><PhoneOff />Disconnect</Button>
+            {!callStarted? <Button className='mt-20 flex items-center gap-2' onClick={StartCall} disabled={loading}>
+              {loading ? <Loader className='animate-spin' /> : <PhoneCall />} Start Call </Button>
+            :<Button variant={'destructive'} onClick={endCall} disabled={loading}>
+              {loading ? <Loader className='animate-spin' /> : <PhoneOff />} Disconnect </Button>
             }
           </div>
         )}
@@ -161,3 +188,4 @@ function MedicalVoiceAgent() {
 }
 
 export default MedicalVoiceAgent
+
