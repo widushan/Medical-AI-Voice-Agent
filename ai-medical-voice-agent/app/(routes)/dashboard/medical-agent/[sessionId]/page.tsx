@@ -1,5 +1,5 @@
 "use client"
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { doctorAgent } from '../../_components/DoctorAgentCard';
@@ -7,9 +7,10 @@ import { Circle, Loader, PhoneCall, PhoneOff } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Vapi from '@vapi-ai/web';
+import { toast } from 'sonner';
 
 
-type SessionDetail = {
+export type SessionDetail = {
   id: number,
   notes: string,
   sessionId: string,
@@ -48,6 +49,8 @@ function MedicalVoiceAgent() {
   const [messages, setMessages] = useState<messages[]>([]);
 
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     sessionId && GetSessionDetails();
@@ -115,7 +118,9 @@ function MedicalVoiceAgent() {
   }
 
   const endCall = async() => {
-    setLoading(true);
+
+    const result = await GenerateReport();
+    
     if (!vapiInstance) return;
     
     // Stop the call
@@ -128,19 +133,20 @@ function MedicalVoiceAgent() {
     if (listeners.onSpeechStart) vapiInstance.off('speech-start', listeners.onSpeechStart);
     if (listeners.onSpeechEnd) vapiInstance.off('speech-end', listeners.onSpeechEnd);
 
-    
     // Reset state
     setCallStarted(false);
     setVapiInstance(null);
     setListeners({});
 
-    const result = await GenerateReport();
+    toast.success('Your report is generated')
+
+    router.replace('/dashboard');
     
-    setLoading(false);
   };
 
 
   const GenerateReport = async () => {
+    setLoading(true);
     const result = await axios.post('/api/medical-report', {
       messages: messages,
       sessionDetail: sessionDetail,
@@ -148,7 +154,11 @@ function MedicalVoiceAgent() {
     })
     // Medical report shape: sessionId, agent, user, timestamp, chiefComplaint, summary, symptoms, duration, severity, medicationsMentioned, recommendations
     console.log('Medical report:', result.data);
+
+    setLoading(false);
+
     return result.data;
+    
   }
 
 

@@ -3,7 +3,7 @@ import { SessionChatTable } from "@/config/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   const { notes, selectedDoctor } = await req.json();
@@ -16,9 +16,8 @@ export async function POST(req: NextRequest) {
       notes: notes,
       selectedDoctor: selectedDoctor,
       createdOn: (new Date()).toString()
-      //@ts-ignore
-    }).returning({SessionChatTable})
-    return NextResponse.json(result[0]?.SessionChatTable);
+    }).returning();
+    return NextResponse.json(result[0]);
   } catch (e) {
     return NextResponse.json(e)
   }
@@ -31,9 +30,21 @@ export async function GET(req: NextRequest) {
   const sessionId = searchParams.get('sessionId');
   const user = await currentUser();
 
-  const result = await db.select().from(SessionChatTable)
-  //@ts-ignore
-  .where(eq(SessionChatTable.sessionId, sessionId));
+  if (sessionId === 'all') {
+    const result = await db.select().from(SessionChatTable)
+      //@ts-ignore
+      .where(eq(SessionChatTable.createdBy, user?.primaryEmailAddress?.emailAddress))
+      .orderBy(desc(SessionChatTable.id));
+
+    return NextResponse.json(result);
+  }
+  else {
+    const result = await db.select().from(SessionChatTable)
+    //@ts-ignore
+    .where(eq(SessionChatTable.sessionId, sessionId));
 
   return NextResponse.json(result[0]);
+
+  }
+
 }
