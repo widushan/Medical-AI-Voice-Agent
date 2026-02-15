@@ -11,6 +11,7 @@ import {
 import { SessionChatTable } from '@/config/schema'
 import { SessionDetail } from '../medical-agent/[sessionId]/page'
 import { Button } from '@/components/ui/button'
+import moment from 'moment'
 
 
 type Props = {
@@ -25,7 +26,7 @@ function HistoryTable({ historyList }:Props) {
             <TableCaption>Previous Consultation Reports</TableCaption>
             <TableHeader>
                 <TableRow>
-                <TableHead className="w-[100px]">AI Medical Specialist</TableHead>
+                <TableHead>AI Medical Specialist</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Action</TableHead>
@@ -36,7 +37,7 @@ function HistoryTable({ historyList }:Props) {
               <TableRow key={record.sessionId}>
                 <TableCell className="font-medium">{record.selectedDoctor.specialist}</TableCell>
                 <TableCell>{record.notes}</TableCell>
-                <TableCell>{record.createdOn}</TableCell>
+                <TableCell>{moment(new Date(record.createdOn)).fromNow() }</TableCell>
                 <TableCell className="text-right"> <Button variant={'link'} size={'sm'}>View Report</Button> </TableCell>
               </TableRow>
             ))}
