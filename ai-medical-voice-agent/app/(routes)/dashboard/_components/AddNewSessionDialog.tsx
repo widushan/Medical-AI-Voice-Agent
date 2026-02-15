@@ -64,7 +64,7 @@ const AddNewSessionDialog = () => {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-            <Button className='mt-3'>+ Start a Consultation</Button>
+            <Button style={{ cursor: "pointer" }} className='mt-3'>+ Start a Consultation</Button>
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>
