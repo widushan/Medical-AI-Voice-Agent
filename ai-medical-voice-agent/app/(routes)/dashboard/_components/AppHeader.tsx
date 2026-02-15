@@ -16,11 +16,6 @@ const menuOptions = [
   },
   {
     id: 3,
-    name: 'Pricing',
-    path: '/pricing'
-  },
-  {
-    id: 4,
     name: 'Profile',
     path: '/profile'
   }
