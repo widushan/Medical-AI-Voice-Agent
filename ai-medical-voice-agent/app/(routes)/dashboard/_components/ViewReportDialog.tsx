@@ -2,7 +2,6 @@ import React from 'react'
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -10,35 +9,139 @@ import {
 import { Button } from '@/components/ui/button'
 import { SessionDetail } from '../medical-agent/[sessionId]/page'
 import moment from 'moment'
+import { Stethoscope } from 'lucide-react'
 
-
-type props = {
-    record:SessionDetail
+type MedicalReport = {
+  sessionId?: string
+  agent?: string
+  user?: string
+  timestamp?: string
+  chiefComplaint?: string
+  summary?: string
+  symptoms?: string[]
+  duration?: string
+  severity?: string
+  medicationsMentioned?: string[]
+  recommendations?: string[]
 }
 
+type Props = {
+  record: SessionDetail
+}
 
-function ViewReportDialog({record}:props) {
+function ReportSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className='space-y-2'>
+      <h3 className='font-bold text-blue-500 text-base border-b border-blue-500 pb-1'>{title}</h3>
+      <div className='text-sm text-gray-700'>{children}</div>
+    </div>
+  )
+}
+
+function ViewReportDialog({ record }: Props) {
+  const report = (record.report as MedicalReport | null) ?? {}
+  const hasReport = record.report && typeof record.report === 'object' && 'summary' in (record.report as object)
+
   return (
     <Dialog>
-        <DialogTrigger asChild>
-            <Button variant={'link'} size={'sm'}>View Report</Button>
-        </DialogTrigger>
-        <DialogContent>
-            <DialogHeader>
-            <DialogTitle asChild>
-                <h2 className='text-center text-2xl'>Medical AI Voice Agent Report</h2>
-            </DialogTitle>
-            <DialogDescription asChild>
-                <div>
-                    <h2 className='font-bold text-blue-500 text-lg'>Video Info</h2>
-                    <div className='grid grid-cols-2'>    
-                        <h2> <span className='font-bold'> Doctor Specialization : </span> {record.selectedDoctor.specialist} </h2>
-                        <h2>Consult Date : {moment(new Date(record?.createdOn)).fromNow()} </h2>
-                    </div>
-                </div>
-            </DialogDescription>
-            </DialogHeader>
-        </DialogContent>
+      <DialogTrigger asChild>
+        <Button variant={'link'} size={'sm'}>View Report</Button>
+      </DialogTrigger>
+      <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
+        <DialogHeader>
+          <DialogTitle asChild>
+            <h2 className='flex items-center justify-center gap-2 text-xl font-semibold'>
+              <Stethoscope className='h-6 w-6 text-blue-500' />
+              Medical AI Voice Agent Report
+            </h2>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className='space-y-6 pt-2'>
+          {/* Session Info */}
+          <ReportSection title='Session Info'>
+            <div className='grid grid-cols-2 gap-x-6 gap-y-2'>
+              <div>
+                <span className='font-semibold'>Doctor:</span> {record.selectedDoctor?.specialist ?? '—'}
+              </div>
+              <div>
+                <span className='font-semibold'>Consulted On:</span> {record.createdOn ? moment(new Date(record.createdOn)).format('MMMM Do YYYY, h:mm a') : '—'}
+              </div>
+              <div>
+                <span className='font-semibold'>User:</span> {report.user ?? 'Anonymous'}
+              </div>
+              <div>
+                <span className='font-semibold'>Agent:</span> {report.agent ?? record.selectedDoctor?.specialist ?? '—'}
+              </div>
+            </div>
+          </ReportSection>
+
+          {/* Chief Complaint */}
+          {report.chiefComplaint != null && (
+            <ReportSection title='Chief Complaint'>
+              <p>{report.chiefComplaint}</p>
+            </ReportSection>
+          )}
+
+          {/* Summary */}
+          {report.summary != null && (
+            <ReportSection title='Summary'>
+              <p>{report.summary}</p>
+            </ReportSection>
+          )}
+
+          {/* Symptoms */}
+          {report.symptoms != null && report.symptoms.length > 0 && (
+            <ReportSection title='Symptoms'>
+              <ul className='list-disc list-inside space-y-1'>
+                {report.symptoms.map((s, i) => (
+                  <li key={i}>{s}</li>
+                ))}
+              </ul>
+            </ReportSection>
+          )}
+
+          {/* Duration & Severity */}
+          {(report.duration != null || report.severity != null) && (
+            <ReportSection title='Duration & Severity'>
+              <div className='grid grid-cols-2 gap-x-6'>
+                <div><span className='font-semibold'>Duration:</span> {report.duration ?? 'Not specified'}</div>
+                <div><span className='font-semibold'>Severity:</span> {report.severity ?? '—'}</div>
+              </div>
+            </ReportSection>
+          )}
+
+          {/* Medications Mentioned */}
+          {report.medicationsMentioned != null && report.medicationsMentioned.length > 0 && (
+            <ReportSection title='Medications Mentioned'>
+              <ul className='list-disc list-inside space-y-1'>
+                {report.medicationsMentioned.map((m, i) => (
+                  <li key={i}>{m}</li>
+                ))}
+              </ul>
+            </ReportSection>
+          )}
+
+          {/* Recommendations */}
+          {report.recommendations != null && report.recommendations.length > 0 && (
+            <ReportSection title='Recommendations'>
+              <ul className='list-disc list-inside space-y-1'>
+                {report.recommendations.map((r, i) => (
+                  <li key={i}>{r}</li>
+                ))}
+              </ul>
+            </ReportSection>
+          )}
+
+          {!hasReport && (
+            <p className='text-gray-500 italic'>No AI-generated report for this session yet.</p>
+          )}
+
+          <p className='text-xs text-gray-500 border-t border-gray-200 pt-4 mt-4'>
+            This report was generated by an AI Medical Assistant for informational purposes only.
+          </p>
+        </div>
+      </DialogContent>
     </Dialog>
   )
 }
