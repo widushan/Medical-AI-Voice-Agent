@@ -59,6 +59,24 @@ npm run dev
    ```
 4. Open [http://localhost:3000](http://localhost:3000).
 
+Deployed on Vercel -->  https://medical-ai-voice-agent-two.vercel.app/
+
+<img width="1915" height="1016" alt="Image" src="https://github.com/user-attachments/assets/0a9bd089-7462-4570-8eb6-8bebfb9e23e0" />
+
+<img width="1902" height="1013" alt="Image" src="https://github.com/user-attachments/assets/132d9fd7-4f21-424a-9f1a-21eb12d8f5b9" />
+
+<img width="1907" height="1012" alt="Image" src="https://github.com/user-attachments/assets/f313e959-d7a9-4c32-9410-ad58efa283ca" />
+
+<img width="1907" height="1015" alt="Image" src="https://github.com/user-attachments/assets/6e9e03bd-68fb-4dfe-9bdb-be7f23c6d3f6" />
+
+<img width="1900" height="1006" alt="Image" src="https://github.com/user-attachments/assets/a9a9be36-4432-4e6a-9187-c5a83ff4c8d8" />
+
+<img width="1892" height="1010" alt="Image" src="https://github.com/user-attachments/assets/e61ed713-cc15-42a6-a8d2-39760fbcf777" />
+
+<img width="1913" height="1017" alt="Image" src="https://github.com/user-attachments/assets/048f1151-ca40-44dd-b579-96611ed1153a" />
+
+<img width="1902" height="1013" alt="Image" src="https://github.com/user-attachments/assets/7b31956d-2b12-4975-bb7d-026d58249cef" />
+
 ### Environment variables
 
 Create `.env.local` in `ai-medical-voice-agent` and add:
