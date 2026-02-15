@@ -12,6 +12,7 @@ import { SessionChatTable } from '@/config/schema'
 import { SessionDetail } from '../medical-agent/[sessionId]/page'
 import { Button } from '@/components/ui/button'
 import moment from 'moment'
+import ViewReportDialog from './ViewReportDialog'
 
 
 type Props = {
@@ -38,7 +39,7 @@ function HistoryTable({ historyList }:Props) {
                 <TableCell className="font-medium">{record.selectedDoctor.specialist}</TableCell>
                 <TableCell>{record.notes}</TableCell>
                 <TableCell>{moment(new Date(record.createdOn)).fromNow() }</TableCell>
-                <TableCell className="text-right"> <Button variant={'link'} size={'sm'}>View Report</Button> </TableCell>
+                <TableCell className="text-right"> <ViewReportDialog record={record} /> </TableCell>
               </TableRow>
             ))}
             </TableBody>
